@@ -63,13 +63,61 @@ app.get("/singlepost/:id", async (req, res) => {
 });
 
 // Update a single post
-app.patch("/update", (req, res) => {
+app.patch("/update/:id", async (req, res) => {
   try {
-  } catch (error) {}
+    const { id } = req.params;
+
+    const { content, title, category, tags } = req.body;
+    const updatepost = await prisma.post.update({
+      where: {
+        id: id,
+      },
+      data: {
+        content,
+        title,
+        category,
+        tags,
+      },
+    });
+
+    res.status(200).json({ message: "post updated", post: updatepost });
+  } catch (error) {
+    console.error(error);
+    if (error.code === "P2025") {
+      res
+        .status(404)
+        .json({ message: "Resource does not exist or cannot be updated" });
+    } else {
+      res.status(500).json({ message: error.message });
+    }
+  }
 });
 
 // delete a single
-app.delete("/remove", (req, res) => {});
+app.delete("/remove/:id", async (req, res) => {
+  try {
+    const { id } = req.params;
+
+    const deletePost = await prisma.post.delete({
+      where: {
+        id: id,
+      },
+    });
+
+    res
+      .status(200)
+      .json({ message: "post successfully deleted", post: deletePost });
+  } catch (error) {
+    console.error(error);
+    if (error.code === "P2025") {
+      res
+        .status(404)
+        .json({ message: "Resource does not exist or cannot be updated" });
+    } else {
+      res.status(500).json({ message: error.message });
+    }
+  }
+});
 
 app.listen(port, () => {
   console.log(` app listening on localhost:${port}`);
