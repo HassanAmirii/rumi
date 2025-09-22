@@ -38,14 +38,14 @@ app.get("/posts", async (req, res) => {
     }
   } catch (error) {
     console.error(error);
-    res.status(500).json({ message: message.error });
+    res.status(500).json({ message: error.message });
   }
 });
 
 // Get a single post
-app.get("/singlepost:id", async (req, res) => {
+app.get("/singlepost/:id", async (req, res) => {
   try {
-    const { id } = req.params.id;
+    const { id } = req.params;
     const getPost = await prisma.post.findUnique({
       where: {
         id: id,
@@ -58,12 +58,15 @@ app.get("/singlepost:id", async (req, res) => {
     }
   } catch (error) {
     console.error(error);
-    res.status(500).json({ message: message.error });
+    res.status(500).json({ message: error.message });
   }
 });
 
 // Update a single post
-app.patch("/update", (req, res) => {});
+app.patch("/update", (req, res) => {
+  try {
+  } catch (error) {}
+});
 
 // delete a single
 app.delete("/remove", (req, res) => {});
