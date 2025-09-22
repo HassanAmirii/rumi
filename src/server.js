@@ -119,6 +119,40 @@ app.delete("/remove/:id", async (req, res) => {
   }
 });
 
+// filter by wild card
+app.get("/wildsearch", async (req, res) => {
+  try {
+    const { term } = req.query;
+
+    if (!term) {
+      const allPosts = await prisma.post.findMany();
+      return res.status(200).json({ posts: allPosts });
+    }
+
+    const posts = await prisma.post.findMany({
+      where: {
+        OR: [
+          { title: { contains: term, mode: "insensitive" } },
+          { content: { contains: term, mode: "insensitive" } },
+          { category: { contains: term, mode: "insensitive" } },
+        ],
+      },
+    });
+
+    if (posts.length > 0) {
+      return res.status(200).json({ posts });
+    } else {
+      return res
+        .status(404)
+        .json({ message: "No posts found for the search term." });
+    }
+  } catch (error) {
+    console.error(error);
+    return res
+      .status(500)
+      .json({ message: "An error occurred while fetching posts." });
+  }
+});
 app.listen(port, () => {
   console.log(` app listening on localhost:${port}`);
 });
