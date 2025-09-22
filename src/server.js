@@ -1,2 +1,2 @@
-const { prisma } = require("../middleware/db");
-const app = require("../middleware/app");
+const { prisma } = require("./middleware/db");
+const app = require("./middleware/app");
